@@ -41,7 +41,7 @@ func (h *Handler) Run(wg *sync.WaitGroup) {
 			continue
 		}
 		h.Coins[i].Price = price
-		h.OutChannel <- fmt.Sprintf("%s price:%s", h.Coins[i].Symbol, h.Coins[i].Price)
+		h.OutChannel <- fmt.Sprintf("%s price:%s\n", h.Coins[i].Symbol, h.Coins[i].Price)
 	}
 
 	for {
@@ -58,9 +58,9 @@ func (h *Handler) Run(wg *sync.WaitGroup) {
 					log.Println(err.Error())
 				}
 				if price != h.Coins[i].Price {
-					h.OutChannel <- fmt.Sprintf("%s price:%s changed", h.Coins[i].Symbol, h.Coins[i].Price)
+					h.OutChannel <- fmt.Sprintf("%s price:%s changed\n", h.Coins[i].Symbol, h.Coins[i].Price)
 				} else {
-					h.OutChannel <- fmt.Sprintf("%s price:%s", h.Coins[i].Symbol, h.Coins[i].Price)
+					h.OutChannel <- fmt.Sprintf("%s price:%s\n", h.Coins[i].Symbol, h.Coins[i].Price)
 				}
 				h.Coins[i].Price = price
 			}

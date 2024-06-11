@@ -79,22 +79,20 @@ func main() {
 
 func printer(str <-chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	writer := bufio.NewWriter(os.Stdout)
 	for text := range str {
-		writer.WriteString(text)
+		fmt.Print(text)
 	}
 }
 
 func requestCounter(hands []*runner.Handler) {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
-	writer := bufio.NewWriter(os.Stdout)
 
 	for range ticker.C {
 		var count int
 		for i := range hands {
 			count += hands[i].GetRequestsCount()
 		}
-		writer.WriteString(fmt.Sprintf("workers requests total: %d", count))
+		fmt.Printf("workers requests total: %d\n", count)
 	}
 }
