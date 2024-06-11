@@ -1,0 +1,16 @@
+symbols:
+ - "LTCBTC"
+ - "BTCUSDT"
+ - "EOSUSDT"
+ - "EOSETH"
+ - "BNBETH"
+ - "OAXETH"
+ - "WTCBTC"
+ - "STRATBTC"
+ - "YOYOBTC"
+ - "BQXBTC"
+ - "FUNETH"
+ - "IOTAETH"
+ - "SALTBTC"
+# max_workers - ограничивает количество параллельно запущенных воркеров, которые делают запросы на биржу
+max_workers: 8
