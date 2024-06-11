@@ -5,6 +5,7 @@ import (
 	"CryptoParser/internal/runner"
 	"bufio"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"runtime"
@@ -78,20 +79,22 @@ func main() {
 
 func printer(str <-chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
+	writer := bufio.NewWriter(os.Stdout)
 	for text := range str {
-		log.Println(text)
+		writer.WriteString(text)
 	}
 }
 
 func requestCounter(hands []*runner.Handler) {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
+	writer := bufio.NewWriter(os.Stdout)
 
 	for range ticker.C {
 		var count int
 		for i := range hands {
 			count += hands[i].GetRequestsCount()
 		}
-		log.Printf("workers requests total: %d", count)
+		writer.WriteString(fmt.Sprintf("workers requests total: %d", count))
 	}
 }
