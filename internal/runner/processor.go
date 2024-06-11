@@ -11,21 +11,21 @@ import (
 
 const api = "https://api.binance.com/api/v3/ticker/price?symbol="
 
-type coins struct {
+type Coins struct {
 	Symbol string `json:"symbol"`
 	Price  string `json:"price"`
 }
 
 type Handler struct {
-	Coins        []coins
+	Coins        []Coins
 	OutChannel   chan string
 	Stop         chan struct{}
+	requestCount int
 	Wg           *sync.WaitGroup
-	RequestCount int
 }
 
-func (h *Handler) AppendCoinsSymbol(str string) {
-	h.Coins = append(h.Coins, coins{str, "0"})
+func (h *Handler) GetRequestsCount() int {
+	return h.requestCount
 }
 
 func (h *Handler) Run(wg *sync.WaitGroup) {
@@ -35,7 +35,7 @@ func (h *Handler) Run(wg *sync.WaitGroup) {
 	}
 	for i := range h.Coins {
 		price, err := getPrice(h.Coins[i].Symbol)
-		h.RequestCount++
+		h.requestCount++
 		if err != nil {
 			log.Println(err.Error())
 			continue
@@ -53,7 +53,7 @@ func (h *Handler) Run(wg *sync.WaitGroup) {
 				}
 			default:
 				price, err := getPrice(h.Coins[i].Symbol)
-				h.RequestCount++
+				h.requestCount++
 				if err != nil {
 					log.Println(err.Error())
 				}
@@ -68,10 +68,6 @@ func (h *Handler) Run(wg *sync.WaitGroup) {
 	}
 }
 
-func (h *Handler) GetRequestCount() int {
-	return h.RequestCount
-}
-
 func getPrice(symbol string) (string, error) {
 	resp, err := http.Get(api + symbol)
 	if err != nil {
@@ -83,7 +79,7 @@ func getPrice(symbol string) (string, error) {
 		return "", err
 	}
 
-	var coin coins
+	var coin Coins
 	err = json.Unmarshal(body, &coin)
 	if err != nil {
 		return "", err
