@@ -18,7 +18,7 @@ import (
 
 func main() {
 	var filePath string
-	flag.StringVar(&filePath, "f", "", "provide config file path") //getting path to config file
+	flag.StringVar(&filePath, "f", "config.yaml", "provide config file path") //getting path to config file
 	flag.Parse()
 	if filePath == "" {
 		log.Fatal("Config file path not provided")
@@ -28,14 +28,14 @@ func main() {
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err.Error())
-	}
+	} // лучше добавлять контекста к ошибке, а то не поймешь какойц именно вызов упал с ошибкой
 
 	err = yaml.Unmarshal(file, &data) //parsing config file
 	if err != nil {
 		log.Fatal(err.Error())
-	} else if data.MaxWorkers <= 0 {
+	} else if data.MaxWorkers <= 0 { // лучше отдельно с ошибкой разобраться, а потм валидировать - будет более читабельно
 		log.Fatal("max_workers set to 0, can not run program with such value")
-	} else if data.MaxWorkers > runtime.NumCPU() { //setting max cores if maxWorkers exceeds
+	} else if data.MaxWorkers > runtime.NumCPU() { //setting max cores if maxWorkers exceeds - лишние коменты много где вижу -  итак понятно что ту делаем
 		data.MaxWorkers = runtime.NumCPU()
 	}
 
@@ -48,7 +48,7 @@ func main() {
 	go printer(output, &wg)           //starting a go routine for printer
 
 	for i := 1; i <= data.MaxWorkers; i++ { //initiating handlers and distributing cryptopairs
-		hand := runner.Handler{}
+		hand := runner.Handler{} // у тебя есть пакет ранер, в которм файл процессор, в котором объявлен хэндлер - очень запутанно
 		handlersList = append(handlersList, &hand)
 		hand.Stop = stopChannel
 		hand.OutChannel = output
@@ -72,7 +72,7 @@ func main() {
 		}
 	}
 	wg.Wait() //waiting for all goroutines to stop
-	wg.Add(1)
+	wg.Add(1) // выглядит очень запутанно, при росте программы можно наломать дров - я бы поискал дургое решение как тормознуть принтер
 	close(output)
 	wg.Wait() //waiting for printer to print
 }

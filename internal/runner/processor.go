@@ -17,11 +17,11 @@ type Coins struct {
 }
 
 type Handler struct {
-	Coins        []Coins
+	Coins        []Coins // лучше отделять модели для использования в бизнес логике и модели для того чтобы анмаршалить ответ от биржи
 	OutChannel   chan string
-	Stop         chan struct{}
-	requestCount int
-	Wg           *sync.WaitGroup
+	Stop         chan struct{}   // я бы передал эти каналы в метод run а не присваивал, а то сбивает с толку - что он сам себя и должен в другом методе стопнуть
+	requestCount int             // надо защищать мьютексом или атомиком, ты же из разных рутин к нему обращаешься
+	Wg           *sync.WaitGroup // нигде не используется
 }
 
 func (h *Handler) GetRequestsCount() int {
@@ -33,7 +33,7 @@ func (h *Handler) Run(wg *sync.WaitGroup) {
 	if len(h.Coins) == 0 {
 		return
 	}
-	for i := range h.Coins {
+	for i := range h.Coins { // не понял зачем этот отдельный цикл
 		price, err := getPrice(h.Coins[i].Symbol)
 		h.requestCount++
 		if err != nil {
